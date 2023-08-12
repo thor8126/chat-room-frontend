@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 
-const socket = io.connect("http://localhost:5000");
+const socket = io.connect("https://server-twrb.onrender.com");
 
-function Chat() {
+function Chat({ isDarkTheme, setIsDarkTheme }) {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
-  const [currentRoom, setCurrentRoom] = useState("general"); // Current room user is in
-  const [rooms, setRooms] = useState(["general", "random", "tech"]); // Available chat rooms
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const [currentRoom, setCurrentRoom] = useState("general");
+  const [rooms, setRooms] = useState(["general", "random", "tech"]);
 
   useEffect(() => {
     socket.on("message", (newMessage) => {
@@ -18,46 +17,41 @@ function Chat() {
 
   const sendMessage = () => {
     if (message.trim() === "") return;
-
-    // Emit the sendMessage event to the backend
     socket.emit("sendMessage", { message, user: "You", room: currentRoom });
-
     setMessage("");
   };
 
   useEffect(() => {
-    // Fetch initial messages from the backend
-    fetch("http://localhost:5000/getMessages")
+    fetch(`https://server-twrb.onrender.com/getMessages/${currentRoom}`)
       .then((response) => response.json())
       .then((data) => {
         setMessages(data);
       })
       .catch((error) => console.error("Error fetching messages:", error));
-  }, []);
-
-  const toggleDarkTheme = () => {
-    setIsDarkTheme(!isDarkTheme);
-  };
+  }, [currentRoom]);
 
   const joinRoom = (room) => {
-    // Emit the joinRoom event to the backend
     socket.emit("joinRoom", room);
     setCurrentRoom(room);
   };
 
   const leaveRoom = (room) => {
-    // Emit the leaveRoom event to the backend
     socket.emit("leaveRoom", room);
-    setCurrentRoom(""); // Reset current room
+    setCurrentRoom("");
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
   };
 
   return (
     <div
-      className={`w-screen h-screen flex ${
+      className={`w-screen flex ${
         isDarkTheme ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-800"
       }`}
     >
-      {/* Left panel with room list */}
       <div
         className={`w-1/4 p-4 border-r ${
           isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-gray-700"
@@ -82,31 +76,22 @@ function Chat() {
           ))}
         </ul>
       </div>
-
-      {/* Right panel with chat interface */}
       <div
-        className={`w-3/4 p-4 flex flex-col ${
+        className={`w-3/4 p-4 ${
           isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-gray-700"
         }`}
+        style={{ position: "relative" }}
       >
-        <div className="flex justify-end mb-2">
-          <button
-            onClick={toggleDarkTheme}
-            className={`px-3 py-1 rounded ${
-              isDarkTheme ? "bg-gray-700 text-white" : "bg-white text-gray-700"
-            }`}
-          >
-            {isDarkTheme ? "Light Theme" : "Dark Theme"}
-          </button>
-        </div>
-        <h2 className="text-lg font-semibold mb-2">Chat with John</h2>
-        <div className="flex-grow overflow-y-scroll">
+        <div
+          className="flex-grow overflow-y-scroll"
+          style={{ maxHeight: "calc(90vh - 6rem)", scrollbarWidth: "thin" }}
+        >
           {messages.map((msg, index) => (
             <div
               key={index}
               className={`flex ${
                 msg.user === "You" ? "justify-end" : "justify-start"
-              }`}
+              } mb-2 mr-3`}
             >
               <div
                 className={`px-4 py-2 rounded-lg ${
@@ -117,21 +102,34 @@ function Chat() {
                     : isDarkTheme
                     ? "bg-gray-800 text-white"
                     : "bg-white text-gray-700"
-                } max-w-md`}
+                } ${msg.user !== "You" ? "ml-2" : ""} max-w-md`}
               >
                 {msg.text}
               </div>
             </div>
           ))}
         </div>
-        <div className="mt-4">
-          <div className="flex">
+        <div
+          className="mt-4"
+          style={{
+            position: "fixed",
+            bottom: 0,
+            width: "75%",
+            padding: "1rem",
+            backgroundColor: isDarkTheme ? null : "#F7FAFC",
+            borderTop: isDarkTheme ? "1px solid #4A5568" : "1px solid #CBD5E0",
+          }}
+        >
+          <div className="flex justify-between">
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder="Type your message..."
-              className="flex-grow border rounded-l-md p-2 focus:outline-none"
+              className={`flex-grow border rounded-l-md p-2 focus:outline-none ${
+                isDarkTheme ? "bg-gray-700 text-white" : ""
+              }`}
             />
             <button
               onClick={sendMessage}
