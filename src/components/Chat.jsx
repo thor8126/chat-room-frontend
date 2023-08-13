@@ -3,7 +3,7 @@ import io from "socket.io-client";
 
 const socket = io.connect("https://server-twrb.onrender.com");
 
-function Chat({ isDarkTheme, setIsDarkTheme }) {
+function Chat({ isDarkTheme, user }) {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [currentRoom, setCurrentRoom] = useState("general");
@@ -17,7 +17,7 @@ function Chat({ isDarkTheme, setIsDarkTheme }) {
 
   const sendMessage = () => {
     if (message.trim() === "") return;
-    socket.emit("sendMessage", { message, user: "You", room: currentRoom });
+    socket.emit("sendMessage", { message, user, room: currentRoom });
     setMessage("");
   };
 
@@ -42,7 +42,18 @@ function Chat({ isDarkTheme, setIsDarkTheme }) {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      sendMessage();
+      if (message.startsWith("/join")) {
+        const parts = message.split(" ");
+        if (parts.length === 2) {
+          joinRoom(parts[1]);
+          setMessage("");
+        }
+      } else if (message === "/leave") {
+        leaveRoom(currentRoom);
+        setMessage("");
+      } else {
+        sendMessage();
+      }
     }
   };
 
@@ -52,11 +63,13 @@ function Chat({ isDarkTheme, setIsDarkTheme }) {
         isDarkTheme ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-800"
       }`}
     >
+      {/* Sidebar */}
       <div
         className={`w-1/4 p-4 border-r ${
           isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-gray-700"
         }`}
       >
+        {/* Sidebar content */}
         <h2 className="text-lg font-semibold mb-2">Rooms</h2>
         <ul className="space-y-2">
           {rooms.map((room) => (
@@ -76,47 +89,57 @@ function Chat({ isDarkTheme, setIsDarkTheme }) {
           ))}
         </ul>
       </div>
+
+      {/* Main chat area */}
       <div
         className={`w-3/4 p-4 ${
           isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-gray-700"
         }`}
-        style={{ position: "relative" }}
       >
+        {/* Chat messages */}
         <div
-          className="flex-grow overflow-y-scroll"
+          id="chat-box"
+          className={`flex-grow overflow-y-scroll ${
+            isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-gray-800"
+          }`}
           style={{ maxHeight: "calc(90vh - 6rem)", scrollbarWidth: "thin" }}
         >
           {messages.map((msg, index) => (
             <div
               key={index}
               className={`flex ${
-                msg.user === "You" ? "justify-end" : "justify-start"
+                msg.user === user ? "justify-end" : "justify-start"
               } mb-2 mr-3`}
             >
               <div
                 className={`px-4 py-2 rounded-lg ${
-                  msg.user === "You"
+                  msg.user === user
                     ? isDarkTheme
-                      ? "bg-blue-700 text-white"
-                      : "bg-blue-500 text-white"
+                      ? "bg-blue-700 text-white message-right"
+                      : "bg-blue-500 text-white message-right"
                     : isDarkTheme
-                    ? "bg-gray-800 text-white"
-                    : "bg-white text-gray-700"
-                } ${msg.user !== "You" ? "ml-2" : ""} max-w-md`}
+                    ? "bg-gray-800 text-white message-left"
+                    : "bg-white text-gray-700 message-left"
+                } ${
+                  msg.user !== user ? "ml-2 border-l-4 border-green-400" : ""
+                } max-w-md`}
               >
                 {msg.text}
               </div>
             </div>
           ))}
         </div>
+
+        {/* Message input */}
         <div
-          className="mt-4"
+          className={`mt-4 ${
+            isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-gray-700"
+          }`}
           style={{
             position: "fixed",
             bottom: 0,
             width: "75%",
             padding: "1rem",
-            backgroundColor: isDarkTheme ? null : "#F7FAFC",
             borderTop: isDarkTheme ? "1px solid #4A5568" : "1px solid #CBD5E0",
           }}
         >
