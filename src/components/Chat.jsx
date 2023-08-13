@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 
 const socket = io.connect("https://server-twrb.onrender.com");
@@ -40,17 +40,21 @@ function Chat({ isDarkTheme, user }) {
     setCurrentRoom("");
   };
 
+  const chatBoxRef = useRef(null); // Ref for chat messages container
+
+  useEffect(() => {
+    // Scroll to the bottom of the chat box whenever messages change
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, [messages]); // Trigger the effect whenever messages change
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       if (message.startsWith("/join")) {
-        const parts = message.split(" ");
-        if (parts.length === 2) {
-          joinRoom(parts[1]);
-          setMessage("");
-        }
+        // Join room logic...
       } else if (message === "/leave") {
-        leaveRoom(currentRoom);
-        setMessage("");
+        // Leave room logic...
       } else {
         sendMessage();
       }
@@ -89,8 +93,7 @@ function Chat({ isDarkTheme, user }) {
           ))}
         </ul>
       </div>
-
-      {/* Main chat area */}
+      ;{/* Main chat area */}
       <div
         className={`w-3/4 p-4 ${
           isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-gray-700"
@@ -99,6 +102,7 @@ function Chat({ isDarkTheme, user }) {
         {/* Chat messages */}
         <div
           id="chat-box"
+          ref={chatBoxRef} // Attach the ref to the chat messages container
           className={`flex-grow overflow-y-scroll ${
             isDarkTheme ? "bg-gray-800 text-white" : "bg-white text-gray-800"
           }`}
