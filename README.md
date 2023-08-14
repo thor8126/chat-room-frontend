@@ -1,54 +1,32 @@
-# React + Vite
+### Chat Room App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a simple chat room application built using React and socket.io. Users can join different chat rooms, send messages, and interact with each other in real-time.
 
-Currently, two official plugins are available:
+Getting Started
+To run this application locally, follow these steps:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Clone the repository:
 
-Full Stack Assignment
+```
+git clone https://github.com/your-username/chat-room-app.git
+```
 
-Task: Real-Time Chat Application with Slash Commands
+2. Install dependencies
 
-Frontend Requirements:
+   - Navigate to the project folder:
 
-- Develop a React frontend for a real-time chat application.
+   ```
+   cd chat-room-app
+   ```
 
-- Users should be able to send and receive messages in different chat rooms.
+   - Install required dependencies:
 
-- Implement a user interface that displays the list of chat rooms and the messages within the selected room.
+   ```
+   npm install
+   ```
 
-- Allow users to type and send messages using a text input box.
+3. Run the application:
 
-- Integrate slash commands (e.g., /join, /leave, /help) to perform specific actions.
-
-Backend Requirements:
-
-- Build a Node.js backend using Express.js and WebSockets (e.g., Socket.io).
-
-- Set up a database (e.g., MongoDB, can choose any) to store chat room and message data.
-
-- Create API endpoints for user authentication and fetching available chat rooms.
-
-- Implement WebSocket events to handle real-time communication between users in the same chat room.
-
-Chat Commands:
-
-- /join [room_name]: Allows the user to join a specific chat room.
-
-- /leave: Allows the user to leave the current chat room.
-
-- /help: Displays a list of available slash commands and their descriptions.
-
-Bonus:
-
-- Implement user authentication and authorization to ensure secure access to chat rooms.
-
-- Enable user-to-user private messaging using slash commands.
-
-- Add functionality for sending images and attachments.
-
-- Implement message editing and deletion.
-
-SUBMISSION : https://forms.gle/L8p4nBjTkeqa8kg29
+   ```
+   npm run dev
+   ```
