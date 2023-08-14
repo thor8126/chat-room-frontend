@@ -8,7 +8,7 @@ To run this application locally, follow these steps:
 1. Clone the repository:
 
 ```
-git clone https://github.com/your-username/chat-room-app.git
+git clone https://github.com/thor8126/chat-room-frontend
 ```
 
 2. Install dependencies
@@ -16,7 +16,7 @@ git clone https://github.com/your-username/chat-room-app.git
    - Navigate to the project folder:
 
    ```
-   cd chat-room-app
+   cd chat-room-frontend
    ```
 
    - Install required dependencies:
@@ -30,3 +30,40 @@ git clone https://github.com/your-username/chat-room-app.git
    ```
    npm run dev
    ```
+
+   ## OR
+
+   Hosted link:
+
+   ```
+   https://chat-room-frontend.vercel.app/
+   ```
+
+Note:-
+
+- First load may take 2-3 minutes because of free api hosting. So please refresh it untill it shows some messages in group chat.
+- You can use two browsers to simulate chatting between multiple peoples. Login as "thor" from one and "kamal" as other user for seeing older chats.
+
+### Features
+
+- Join different chat rooms (e.g., general, random, tech).
+- Send and receive real-time messages.
+- Leave the current chat room.
+- Automatic scrolling to view the latest messages.
+
+### Dependencies
+
+- React
+- socket.io-client
+
+## Usage
+
+- Choose a chat room from the sidebar or create your own.
+- Enter your message in the input field at the bottom.
+- Press "Enter" to send your message. You can also use slash commands like /join, /leave, and /help.
+- Hosted URL
+- The application is hosted on Vercel. You can access it using the following URL:
+
+```
+  https://chat-room-frontend.vercel.app/
+```
